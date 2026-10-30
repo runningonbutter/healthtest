@@ -11,35 +11,431 @@
     <title>Buttercup Health Test</title>
     <style>
       :root {
-        --bg: #fdfaf0;
-        --ink: #22301c;
+        --bg: #fdfcf7;
+        --ink: #1f1f1f;
+        --secondary: #6b7280;
+        --hairline: #e5e5e0;
+        --butter: #f2dda6;
+        --brown: #6f4a2f;
+        --surface: #ffffff;
+        --footer-bg: #f5f5f4;
       }
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #161a12;
-          --ink: #eef2e2;
+          --bg: #2a1b11;
+          --ink: #f3e9d7;
+          --secondary: #c9bba6;
+          --hairline: #4a3524;
+          --butter: #f2dda6;
+          --brown: #e8c98f;
+          --surface: #3a2718;
+          --footer-bg: #33200f;
         }
       }
       * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
       body {
-        margin: 0;
         min-height: 100vh;
-        display: grid;
-        place-items: center;
+        display: flex;
+        flex-direction: column;
         background: var(--bg);
         color: var(--ink);
         font-family: Georgia, "Times New Roman", serif;
+        line-height: 1.55;
+      }
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 48px 24px 40px;
+        display: flex;
+        flex-direction: column;
+      }
+      .label {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--secondary);
+        margin: 0 0 14px;
       }
       h1 {
-        font-weight: 400;
-        font-size: clamp(2rem, 6vw, 3rem);
-        margin: 0;
-        padding: 24px;
+        font-size: clamp(2.2rem, 7vw, 3.2rem);
+        font-weight: 700;
+        line-height: 1.12;
+        color: var(--brown);
+        margin: 0 0 16px;
+      }
+      .logo { width: 84px; height: auto; margin-bottom: 22px; }
+      .screen { display: none; flex-direction: column; }
+      .screen.active { display: flex; }
+      #screen-start { align-items: flex-start; margin-top: 6vh; }
+      .btn-primary {
+        appearance: none;
+        border: none;
+        cursor: pointer;
+        background: var(--butter);
+        color: #1f1f1f;
+        font-family: inherit;
+        font-size: 1.05rem;
+        font-weight: 700;
+        padding: 14px 30px;
+        border-radius: 8px;
+        margin-top: 18px;
+      }
+      .btn-primary:active { transform: translateY(1px); }
+      .btn-pill {
+        appearance: none;
+        cursor: pointer;
+        background: transparent;
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-size: 0.85rem;
+        padding: 8px 18px;
+        border: 1px solid var(--secondary);
+        border-radius: 999px;
+      }
+      .btn-pill:disabled { opacity: 0.35; cursor: default; }
+      .progress {
+        height: 3px;
+        background: var(--hairline);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 34px;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--brown);
+        width: 0%;
+        transition: width 0.25s ease;
+      }
+      .question {
+        font-size: clamp(1.5rem, 4.6vw, 2rem);
+        font-weight: 700;
+        line-height: 1.3;
+        margin: 0 0 30px;
+      }
+      .answers { display: flex; flex-direction: column; gap: 12px; }
+      .answer-btn {
+        appearance: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        text-align: left;
+        background: var(--surface);
+        color: var(--ink);
+        border: 1px solid var(--hairline);
+        border-radius: 8px;
+        padding: 15px 18px;
+        font-family: inherit;
+        font-size: 1.05rem;
+      }
+      .answer-btn .dot {
+        flex: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid var(--secondary);
+        background: transparent;
+      }
+      .answer-btn.selected {
+        background: var(--butter);
+        border-color: var(--butter);
+        color: #1f1f1f;
+      }
+      .answer-btn.selected .dot {
+        border-color: #1f1f1f;
+        background: #1f1f1f;
+        box-shadow: inset 0 0 0 3px var(--butter);
+      }
+      .quiz-nav { margin-top: 30px; display: flex; justify-content: flex-start; }
+      .score-number {
+        font-size: clamp(4rem, 16vw, 6rem);
+        font-weight: 700;
+        line-height: 1;
+        color: var(--brown);
+      }
+      .band-title {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        font-weight: 700;
+        margin: 18px 0 10px;
+        line-height: 1.25;
+      }
+      .band-text { font-size: 1.08rem; margin: 0 0 8px; }
+      .result-section { margin-top: 30px; }
+      .result-section ul { list-style: none; margin: 0; padding: 0; }
+      .result-section li {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 0;
+        border-top: 1px solid var(--hairline);
+        font-size: 1rem;
+      }
+      .result-section li .given {
+        flex: none;
+        font-style: italic;
+        color: var(--secondary);
+      }
+      .nothing { font-size: 1.05rem; font-style: italic; margin: 0; }
+      footer {
+        border-top: 1px solid var(--hairline);
+        background: var(--footer-bg);
+        padding: 22px 24px 30px;
         text-align: center;
+      }
+      footer .slogan {
+        font-style: italic;
+        color: var(--secondary);
+        font-size: 0.95rem;
+        margin: 0 0 6px;
+      }
+      footer a {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+        color: var(--brown);
       }
     </style>
   </head>
   <body>
-    <h1>Buttercup Health Test</h1>
+    <main>
+      <section id="screen-start" class="screen active">
+        <img class="logo" src="favicon.svg" alt="Buttercup butter dish logo" />
+        <p class="label">A health reality check</p>
+        <h1>Buttercup Health Test</h1>
+        <p class="label">20 questions</p>
+        <button class="btn-primary" id="start-btn" type="button">Start the test</button>
+      </section>
+
+      <section id="screen-quiz" class="screen">
+        <p class="label" id="quiz-label">Question 1 of 20</p>
+        <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+        <p class="question" id="question-text"></p>
+        <div class="answers" id="answers"></div>
+        <div class="quiz-nav">
+          <button class="btn-pill" id="back-btn" type="button">&larr; Back</button>
+        </div>
+      </section>
+
+      <section id="screen-result" class="screen">
+        <p class="label">Your result</p>
+        <div class="score-number" id="score-number"></div>
+        <p class="label" style="margin-top:10px;">Out of 100</p>
+        <h2 class="band-title" id="band-title"></h2>
+        <p class="band-text" id="band-text"></p>
+        <div class="result-section" id="costing-section">
+          <p class="label">What&rsquo;s costing you</p>
+          <p class="nothing" id="costing-nothing" style="display:none;">Nothing. Not one thing.</p>
+          <ul id="costing-list"></ul>
+        </div>
+        <div class="result-section" id="nailed-section">
+          <p class="label">What you&rsquo;ve nailed</p>
+          <ul id="nailed-list"></ul>
+        </div>
+        <div>
+          <button class="btn-primary" id="retake-btn" type="button">Take it again</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p class="slogan">health &amp; food news for grandmas and gym bros</p>
+      <a href="https://www.runningonbutter.com" target="_blank" rel="noopener">Subscribe to Running On Butter by Vance Voetberg</a>
+    </footer>
+
+    <script>
+      var ANSWERS = ["Always", "Often", "Sometimes", "Rarely", "Never"];
+
+      // rev = true means the good habit: best answer is "Always" (points flipped)
+      var QUESTIONS = [
+        { t: "I eat seed oils", rev: false },
+        { t: "I use a microwave", rev: false },
+        { t: "I cook with non stick pans", rev: false },
+        { t: "I drink out of plastic bottles", rev: false },
+        { t: "I drink filtered water", rev: true },
+        { t: "I eat organic food", rev: true },
+        { t: "I eat things with sucralose", rev: false },
+        { t: "I check the ingredients in my food", rev: true },
+        { t: "I eat processed food", rev: false },
+        { t: "I eat fruit", rev: true },
+        { t: "I eat vegetables", rev: true },
+        { t: "I exercise", rev: true },
+        { t: "I scroll my phone in bed before I fall asleep", rev: false },
+        { t: "I sleep less than 7 hours a night", rev: false },
+        { t: "I use products with artificial fragrance \u2014 candles, air fresheners, laundry products", rev: false },
+        { t: "I wear wireless headphones", rev: false },
+        { t: "I drink alcohol", rev: false },
+        { t: "I smoke", rev: false },
+        { t: "I read the Bible", rev: true },
+        { t: "I eat butter", rev: true }
+      ];
+
+      var BANDS = [
+        { min: 100, max: 100, title: "You\u2019re better than everyone else",
+          text: "And yes, the title is accurate \u2014 you are a faithful buttercup. You gave the perfect answer to every single question. The bad habits on this list don\u2019t exist in your life, and the good ones are just what you do: you eat real food, you exercise, you check labels, you fear no produce aisle. This isn\u2019t luck, it\u2019s a personality. Try not to bring it up at dinner parties. Or do. You\u2019ve earned it." },
+        { min: 95, max: 99, title: "You\u2019re almost there!",
+          text: "One or two answers. That\u2019s all that stood between you and a perfect score \u2014 and you fumbled them. They\u2019re listed below, itemized for your regret. Find them, fix them, and come back for the crown." },
+        { min: 90, max: 94, title: "Not bad, actually",
+          text: "You rarely touch most of the bad habits list. Whatever points you lost were occasional slip-ups, not habits. Is it perfect? No. But it\u2019s... not bad. Actually." },
+        { min: 85, max: 89, title: "Healthy-adjacent",
+          text: "Look at you \u2014 most of your answers are landing on the right side of this list. What\u2019s left is the small stuff: a few weak answers hanging around the edges. You\u2019re in the neighborhood \u2014 you just don\u2019t live there yet." },
+        { min: 75, max: 84, title: "Pretending to be healthy",
+          text: "You\u2019ve got the outline of a healthy life, and a lot of it is real. But a few weak spots are still in there like they pay rent \u2014 and those are the difference between looking healthy and being it. Evict the two or three habits costing you the most points, and this score jumps a band." },
+        { min: 60, max: 74, title: "Sadly mediocre",
+          text: "More of your answers are clean than dirty \u2014 but the dirty ones are quietly sabotaging you. You know what to do; you just only do it on days ending in \u201Csometimes.\u201D Pick a side. The vegetables are right there." },
+        { min: 45, max: 59, title: "A work in progress (heavy on the \u201Cwork\u201D)",
+          text: "Some of your answers are only occasional offenders, but the worst ones are dragging this score down by the ankles. Your lowest-scoring answers are the culprits \u2014 they\u2019re listed right under this. Your lifestyle isn\u2019t a disaster, it\u2019s just... in beta." },
+        { min: 30, max: 44, title: "Your body is filing complaints",
+          text: "Most of your answers landed on the wrong side of this list, and it shows. A few decent answers kept you off the very bottom \u2014 cherish them. Right now your worst answers are running the show, and they are not good managers." },
+        { min: 0, max: 29, title: "Running on fumes (and seed oils)",
+          text: "Congratulations, you found the floor. The bad habits run your daily routine, and the good stuff barely shows up in your life at all. The good news: it gets better from here fast, and even one change moves the needle. Start literally anywhere." }
+      ];
+
+      function pointsFor(question, answerIdx) {
+        return question.rev ? (4 - answerIdx) : answerIdx;
+      }
+
+      function bandForScore(score) {
+        for (var i = 0; i < BANDS.length; i++) {
+          if (score >= BANDS[i].min && score <= BANDS[i].max) return BANDS[i];
+        }
+        return BANDS[BANDS.length - 1];
+      }
+
+      function computeResults(picks) {
+        var per = QUESTIONS.map(function (q, i) {
+          return { q: q.t, answer: ANSWERS[picks[i]], points: pointsFor(q, picks[i]), order: i };
+        });
+        var total = per.reduce(function (sum, r) { return sum + r.points; }, 0);
+        var score = Math.round((total / 80) * 100);
+        var byPoints = per.slice().sort(function (a, b) {
+          return (a.points - b.points) || (a.order - b.order);
+        });
+        var costing = byPoints.slice(0, 3);
+        var nailed = per.filter(function (r) { return r.points === 4; });
+        if (nailed.length === 0) nailed = per.filter(function (r) { return r.points === 3; });
+        return { total: total, score: score, band: bandForScore(score), costing: costing, nailed: nailed };
+      }
+
+      /* === DOM BELOW (not used by tests) === */
+      var picks = new Array(QUESTIONS.length).fill(null);
+      var current = 0;
+
+      var screens = {
+        start: document.getElementById("screen-start"),
+        quiz: document.getElementById("screen-quiz"),
+        result: document.getElementById("screen-result")
+      };
+      var quizLabel = document.getElementById("quiz-label");
+      var progressFill = document.getElementById("progress-fill");
+      var questionText = document.getElementById("question-text");
+      var answersEl = document.getElementById("answers");
+      var backBtn = document.getElementById("back-btn");
+
+      function show(name) {
+        Object.keys(screens).forEach(function (k) {
+          screens[k].classList.toggle("active", k === name);
+        });
+        window.scrollTo(0, 0);
+      }
+
+      function renderQuestion() {
+        var q = QUESTIONS[current];
+        quizLabel.textContent = "Question " + (current + 1) + " of " + QUESTIONS.length;
+        progressFill.style.width = ((current / QUESTIONS.length) * 100) + "%";
+        questionText.textContent = q.t;
+        answersEl.innerHTML = "";
+        ANSWERS.forEach(function (label, idx) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "answer-btn" + (picks[current] === idx ? " selected" : "");
+          var dot = document.createElement("span");
+          dot.className = "dot";
+          btn.appendChild(dot);
+          btn.appendChild(document.createTextNode(label));
+          btn.addEventListener("click", function () { pick(idx, btn); });
+          answersEl.appendChild(btn);
+        });
+        backBtn.disabled = current === 0;
+      }
+
+      function pick(idx, btn) {
+        picks[current] = idx;
+        var buttons = answersEl.querySelectorAll(".answer-btn");
+        buttons.forEach(function (b) { b.classList.remove("selected"); });
+        btn.classList.add("selected");
+        setTimeout(function () {
+          if (current < QUESTIONS.length - 1) {
+            current++;
+            renderQuestion();
+          } else {
+            renderResult();
+          }
+        }, 220);
+      }
+
+      backBtn.addEventListener("click", function () {
+        if (current > 0) {
+          current--;
+          renderQuestion();
+        }
+      });
+
+      function fillList(ul, items) {
+        ul.innerHTML = "";
+        items.forEach(function (r) {
+          var li = document.createElement("li");
+          var name = document.createElement("span");
+          name.textContent = r.q;
+          var given = document.createElement("span");
+          given.className = "given";
+          given.textContent = r.answer;
+          li.appendChild(name);
+          li.appendChild(given);
+          ul.appendChild(li);
+        });
+      }
+
+      function renderResult() {
+        var res = computeResults(picks);
+        document.getElementById("score-number").textContent = res.score;
+        document.getElementById("band-title").textContent = res.band.title;
+        document.getElementById("band-text").textContent = res.band.text;
+        var nothing = document.getElementById("costing-nothing");
+        var costingList = document.getElementById("costing-list");
+        if (res.score === 100) {
+          nothing.style.display = "block";
+          costingList.innerHTML = "";
+        } else {
+          nothing.style.display = "none";
+          fillList(costingList, res.costing);
+        }
+        var nailedSection = document.getElementById("nailed-section");
+        if (res.nailed.length > 0) {
+          nailedSection.style.display = "block";
+          fillList(document.getElementById("nailed-list"), res.nailed);
+        } else {
+          nailedSection.style.display = "none";
+        }
+        show("result");
+      }
+
+      document.getElementById("start-btn").addEventListener("click", function () {
+        current = 0;
+        renderQuestion();
+        show("quiz");
+      });
+
+      document.getElementById("retake-btn").addEventListener("click", function () {
+        picks = new Array(QUESTIONS.length).fill(null);
+        current = 0;
+        show("start");
+      });
+    </script>
   </body>
 </html>
