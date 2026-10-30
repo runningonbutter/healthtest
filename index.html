@@ -11,241 +11,655 @@
     <title>Buttercup Health Test</title>
     <style>
       :root {
-        --bg: #fdfcf7;
-        --ink: #1f1f1f;
-        --secondary: #6b7280;
-        --hairline: #e5e5e0;
+        color-scheme: light dark;
+        /* Light theme — original white design */
+        --bg: #ffffff;
+        --ink: #232323;
+        --ink-soft: #4a4a44;
+        --meta: #75706a;
+        --hairline: #e3ddd2;
         --butter: #f2dda6;
-        --brown: #6f4a2f;
-        --surface: #ffffff;
-        --footer-bg: #f5f5f4;
+        --butter-deep: #e9cf8d;
+        --brown: #6b3f1d;
+        --brown-deep: #54300f;
+        --sage: #5f7d68;
+        --sage-ground: #eef3ee;
+        --footer-bg: #f7f3ec;
+        --option-bg: #ffffff;
+        --option-border: #d8cfc0;
+        --track: #e8e0d1;
+        --serif: Georgia, "Times New Roman", Times, serif;
+        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       }
+
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #2a1b11;
-          --ink: #f3e9d7;
-          --secondary: #c9bba6;
-          --hairline: #4a3524;
+          /* Dark theme — deep warm brown */
+          --bg: #2e1c11;
+          --ink: #f5ebdd;
+          --ink-soft: #e8dcc8;
+          --meta: #c9b294;
+          --hairline: #5a3d28;
           --butter: #f2dda6;
-          --brown: #e8c98f;
-          --surface: #3a2718;
-          --footer-bg: #33200f;
+          --butter-deep: #e9cf8d;
+          --brown: #f2dda6;
+          --brown-deep: #ffe9b8;
+          --sage: #a8c0b0;
+          --sage-ground: #3d2818;
+          --footer-bg: #22140a;
+          --option-bg: #3a2416;
+          --option-border: #6b4a2f;
+          --track: #4a3220;
         }
       }
+
       * { box-sizing: border-box; }
-      html, body { margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
       body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
+        margin: 0;
         background: var(--bg);
         color: var(--ink);
-        font-family: Georgia, "Times New Roman", serif;
-        line-height: 1.55;
+        font-family: var(--serif);
+        -webkit-font-smoothing: antialiased;
+        transition: background 0.2s ease, color 0.2s ease;
       }
-      main {
-        flex: 1;
-        width: 100%;
-        max-width: 640px;
-        margin: 0 auto;
-        padding: 48px 24px 40px;
-        display: flex;
-        flex-direction: column;
-      }
+      ::selection { background: var(--butter); color: #1f1f1f; }
+
       .label {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-        font-size: 0.72rem;
+        font-family: var(--sans);
+        font-size: 11px;
         font-weight: 600;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: var(--secondary);
-        margin: 0 0 14px;
+        color: var(--meta);
       }
-      h1 {
-        font-size: clamp(2.2rem, 7vw, 3.2rem);
+
+      /* ---------- Header ---------- */
+      .topbar {
+        border-bottom: 1px solid var(--hairline);
+      }
+      .topbar-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .wordmark {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .wordmark svg { width: 34px; height: 34px; flex: none; }
+      .wordmark-name {
+        font-family: var(--serif);
         font-weight: 700;
-        line-height: 1.12;
+        font-size: 19px;
+        letter-spacing: -0.01em;
         color: var(--brown);
-        margin: 0 0 16px;
+        line-height: 1;
       }
-      .logo { width: 84px; height: auto; margin-bottom: 22px; }
-      .screen { display: none; flex-direction: column; }
-      .screen.active { display: flex; }
-      #screen-start { align-items: flex-start; margin-top: 6vh; }
-      .btn-primary {
-        appearance: none;
-        border: none;
-        cursor: pointer;
+      .wordmark-name em { font-style: italic; font-weight: 400; }
+      .topnav {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+      }
+      .topnav a {
+        font-family: var(--sans);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--meta);
+        text-decoration: none;
+      }
+      .topnav a:hover { color: var(--ink); }
+      .topnav .nav-cta {
         background: var(--butter);
         color: #1f1f1f;
-        font-family: inherit;
-        font-size: 1.05rem;
-        font-weight: 700;
-        padding: 14px 30px;
-        border-radius: 8px;
-        margin-top: 18px;
+        padding: 8px 14px;
+        border-radius: 7px;
+        letter-spacing: 0.06em;
       }
-      .btn-primary:active { transform: translateY(1px); }
-      .btn-pill {
-        appearance: none;
+      .topnav .nav-cta:hover { background: var(--butter-deep); color: #1f1f1f; }
+      @media (max-width: 700px) {
+        .topbar-inner { flex-wrap: wrap; row-gap: 10px; }
+        .topnav { margin-left: auto; gap: 12px; }
+      }
+      @media (max-width: 560px) {
+        .topnav a:not(.nav-cta) { display: none; }
+      }
+
+      /* ---------- Layout ---------- */
+      .column {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* ---------- Hero / title page ---------- */
+      .hero {
+        text-align: center;
+        padding: 64px 0 56px;
+      }
+      .hero-logo {
+        width: 148px;
+        height: 148px;
+        margin: 0 auto 8px;
+        display: block;
+      }
+      .hero .label { display: block; margin-bottom: 18px; }
+      .hero .label .dot { color: var(--sage); }
+      h1 {
+        font-family: var(--serif);
+        font-weight: 700;
+        font-size: clamp(42px, 8vw, 62px);
+        line-height: 1.04;
+        letter-spacing: -0.015em;
+        color: var(--brown);
+        margin: 0 0 20px;
+      }
+      h1 em { font-style: italic; font-weight: 400; }
+      .hero-sub {
+        font-size: 20px;
+        line-height: 1.65;
+        color: var(--ink-soft);
+        max-width: 520px;
+        margin: 0 auto 34px;
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 36px;
+      }
+      .btn-primary {
+        display: inline-block;
+        background: var(--butter);
+        color: #1f1f1f;
+        font-family: var(--sans);
+        font-size: 15px;
+        font-weight: 600;
+        padding: 14px 28px;
+        border: none;
+        border-radius: 8px;
         cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s ease;
+      }
+      .btn-primary:hover { background: var(--butter-deep); }
+      .btn-pill {
+        display: inline-block;
         background: transparent;
         color: var(--ink);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-        font-size: 0.85rem;
-        padding: 8px 18px;
-        border: 1px solid var(--secondary);
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 500;
+        padding: 13px 24px;
+        border: 1px solid var(--option-border);
         border-radius: 999px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: border-color 0.15s ease;
       }
-      .btn-pill:disabled { opacity: 0.35; cursor: default; }
+      .btn-pill:hover { border-color: var(--meta); }
+      .rule { border: none; border-top: 1px solid var(--hairline); margin: 0; }
+
+      /* ---------- How it works strip ---------- */
+      .how {
+        padding: 44px 0 8px;
+        text-align: center;
+      }
+      .how .label { display: block; margin-bottom: 26px; }
+      .how-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+        text-align: left;
+      }
+      @media (max-width: 620px) {
+        .how-grid { grid-template-columns: 1fr; gap: 22px; }
+      }
+      .how-item .num {
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 26px;
+        color: var(--sage);
+        display: block;
+        margin-bottom: 8px;
+      }
+      .how-item h3 {
+        font-family: var(--serif);
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 6px;
+        color: var(--ink);
+      }
+      .how-item p {
+        font-size: 15.5px;
+        line-height: 1.6;
+        color: var(--ink-soft);
+        margin: 0;
+      }
+
+      /* ---------- Quiz mock ---------- */
+      .quiz {
+        padding: 52px 0 72px;
+      }
+      .quiz-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 12px;
+      }
       .progress {
-        height: 3px;
-        background: var(--hairline);
-        border-radius: 2px;
+        height: 4px;
+        background: var(--track);
+        border-radius: 999px;
         overflow: hidden;
-        margin-bottom: 34px;
+        margin-bottom: 44px;
       }
       .progress-fill {
         height: 100%;
+        width: 5%;
         background: var(--brown);
-        width: 0%;
-        transition: width 0.25s ease;
+        border-radius: 999px;
+        transition: width 0.35s ease;
       }
-      .question {
-        font-size: clamp(1.5rem, 4.6vw, 2rem);
+      .quiz-question {
+        font-family: var(--serif);
+        font-size: clamp(32px, 6vw, 42px);
         font-weight: 700;
-        line-height: 1.3;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        margin: 0 0 12px;
+        color: var(--ink);
+      }
+      .quiz-prompt {
+        font-size: 17px;
+        font-style: italic;
+        line-height: 1.6;
+        color: var(--meta);
         margin: 0 0 30px;
       }
-      .answers { display: flex; flex-direction: column; gap: 12px; }
-      .answer-btn {
-        appearance: none;
+      .answers {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 26px;
+      }
+      .answer {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        width: 100%;
+        text-align: left;
+        background: var(--option-bg);
+        border: 1px solid var(--option-border);
+        border-radius: 8px;
+        padding: 16px 18px;
+        font-family: var(--serif);
+        font-size: 18px;
+        color: var(--ink);
         cursor: pointer;
+        transition: background 0.12s ease, border-color 0.12s ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .answer:hover { border-color: var(--meta); }
+      .answer:focus-visible { outline: 2px solid var(--brown); outline-offset: 2px; }
+      .answer .radio {
+        flex: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1.5px solid var(--option-border);
+        background: transparent;
+        position: relative;
+        transition: border-color 0.12s ease;
+      }
+      .answer.selected {
+        background: var(--butter);
+        border-color: var(--butter-deep);
+        color: #1f1f1f;
+      }
+      .answer.selected .radio {
+        border-color: #8a5a2b;
+      }
+      .answer.selected .radio::after {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        background: #8a5a2b;
+      }
+      .quiz-actions {
         display: flex;
         align-items: center;
         gap: 12px;
-        width: 100%;
-        text-align: left;
-        background: var(--surface);
-        color: var(--ink);
+        flex-wrap: wrap;
+      }
+      .quiz-actions .btn-primary { padding: 14px 34px; font-size: 15px; }
+      .quiz-actions .btn-primary:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .quiz-actions .btn-pill:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .quiz-actions .btn-pill:disabled:hover { border-color: var(--option-border); }
+      .demo-end {
+        background: var(--sage-ground);
         border: 1px solid var(--hairline);
         border-radius: 8px;
-        padding: 15px 18px;
-        font-family: inherit;
-        font-size: 1.05rem;
+        padding: 22px 20px;
+        margin-bottom: 26px;
+        text-align: center;
       }
-      .answer-btn .dot {
-        flex: none;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        border: 2px solid var(--secondary);
-        background: transparent;
+      .demo-end[hidden] { display: none; }
+      .demo-end h3 {
+        font-family: var(--serif);
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0 0 8px;
+        color: var(--ink);
       }
-      .answer-btn.selected {
-        background: var(--butter);
-        border-color: var(--butter);
-        color: #1f1f1f;
+      .demo-end p {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-soft);
+        margin: 0;
       }
-      .answer-btn.selected .dot {
-        border-color: #1f1f1f;
-        background: #1f1f1f;
-        box-shadow: inset 0 0 0 3px var(--butter);
+      .quiz-hint {
+        font-family: var(--sans);
+        font-size: 13px;
+        color: var(--meta);
+        margin: 16px 0 0;
+        min-height: 18px;
       }
-      .quiz-nav { margin-top: 30px; display: flex; justify-content: flex-start; }
+      .quiz-hint strong { color: var(--brown); font-weight: 600; }
+
+      /* Scale legend */
+      .scale-note {
+        margin-top: 44px;
+        padding-top: 26px;
+        border-top: 1px solid var(--hairline);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        align-items: center;
+      }
+      .scale-note .label { margin-right: 6px; }
+      .scale-note .chip {
+        font-family: var(--sans);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        border: 1px solid var(--option-border);
+        border-radius: 999px;
+        padding: 5px 12px;
+      }
+
+      /* ---------- Footer ---------- */
+      footer {
+        background: var(--footer-bg);
+        border-top: 1px solid var(--hairline);
+        margin-top: 8px;
+      }
+      .footer-inner {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 34px 20px 40px;
+        text-align: center;
+      }
+      .footer-inner svg { width: 40px; height: 40px; margin-bottom: 10px; }
+      .footer-slogan {
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 15px;
+        color: var(--ink-soft);
+        margin: 0 0 8px;
+      }
+      .footer-credit {
+        font-family: var(--sans);
+        font-size: 12.5px;
+        color: var(--meta);
+        margin: 0 0 14px;
+      }
+      .footer-credit a {
+        color: var(--brown);
+        font-weight: 600;
+        text-decoration: none;
+        border-bottom: 1px solid var(--butter-deep);
+      }
+      .footer-credit a:hover { color: var(--brown-deep); }
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 20px;
+        justify-content: center;
+        margin-bottom: 16px;
+      }
+      .footer-links a {
+        font-family: var(--sans);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--meta);
+        text-decoration: none;
+      }
+      .footer-links a:hover { color: var(--ink); }
+      .footer-fine {
+        font-family: var(--sans);
+        font-size: 11px;
+        line-height: 1.6;
+        color: var(--meta);
+        margin: 0;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        body, .progress-fill, .answer, .btn-primary, .btn-pill { transition: none; }
+      }
+
+      /* ---------- Result (added for the live test) ---------- */
+      .result { padding: 52px 0 72px; }
+      .result[hidden] { display: none; }
+      .quiz[hidden] { display: none; }
+      .result .label { display: block; margin-bottom: 12px; }
       .score-number {
-        font-size: clamp(4rem, 16vw, 6rem);
+        font-family: var(--serif);
+        font-size: clamp(64px, 14vw, 96px);
         font-weight: 700;
         line-height: 1;
         color: var(--brown);
+        margin-bottom: 10px;
       }
       .band-title {
-        font-size: clamp(1.5rem, 5vw, 2rem);
+        font-family: var(--serif);
+        font-size: clamp(28px, 5.5vw, 38px);
         font-weight: 700;
-        margin: 18px 0 10px;
-        line-height: 1.25;
+        line-height: 1.2;
+        margin: 20px 0 10px;
+        color: var(--ink);
       }
-      .band-text { font-size: 1.08rem; margin: 0 0 8px; }
-      .result-section { margin-top: 30px; }
-      .result-section ul { list-style: none; margin: 0; padding: 0; }
-      .result-section li {
+      .band-text { font-size: 18px; line-height: 1.65; color: var(--ink-soft); margin: 0; }
+      .result-section { margin-top: 36px; }
+      .result-section .label { display: block; margin-bottom: 6px; }
+      .result-list { list-style: none; margin: 0; padding: 0; }
+      .result-list li {
         display: flex;
         justify-content: space-between;
         gap: 16px;
         padding: 10px 0;
         border-top: 1px solid var(--hairline);
-        font-size: 1rem;
+        font-size: 16.5px;
       }
-      .result-section li .given {
-        flex: none;
-        font-style: italic;
-        color: var(--secondary);
-      }
-      .nothing { font-size: 1.05rem; font-style: italic; margin: 0; }
-      footer {
-        border-top: 1px solid var(--hairline);
-        background: var(--footer-bg);
-        padding: 22px 24px 30px;
-        text-align: center;
-      }
-      footer .slogan {
-        font-style: italic;
-        color: var(--secondary);
-        font-size: 0.95rem;
-        margin: 0 0 6px;
-      }
-      footer a {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-        font-size: 0.82rem;
-        letter-spacing: 0.04em;
-        color: var(--brown);
-      }
+      .result-list li .given { flex: none; font-style: italic; color: var(--meta); }
+      .nothing { font-size: 17px; font-style: italic; color: var(--ink-soft); margin: 6px 0 0; }
+      .result-actions { margin-top: 40px; }
     </style>
   </head>
   <body>
-    <main>
-      <section id="screen-start" class="screen active">
-        <img class="logo" src="favicon.svg" alt="Buttercup butter dish logo" />
-        <p class="label">A health reality check</p>
-        <h1>Buttercup Health Test</h1>
-        <p class="label">20 questions</p>
-        <button class="btn-primary" id="start-btn" type="button">Start the test</button>
-      </section>
 
-      <section id="screen-quiz" class="screen">
-        <p class="label" id="quiz-label">Question 1 of 20</p>
-        <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
-        <p class="question" id="question-text"></p>
-        <div class="answers" id="answers"></div>
-        <div class="quiz-nav">
-          <button class="btn-pill" id="back-btn" type="button">&larr; Back</button>
-        </div>
-      </section>
+    <!-- Butter-dish mark, reused at three sizes -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <g id="butter-mark">
+          <ellipse cx="32" cy="46" rx="28" ry="8" fill="#D9E0E3" stroke="#B9C4C9" stroke-width="1"/>
+          <ellipse cx="32" cy="45.5" rx="21" ry="5.2" fill="#F2F5F6"/>
+          <ellipse cx="32" cy="47" rx="15" ry="3" fill="#9AA7AD" fill-opacity="0.45"/>
+          <polygon points="46,37 42,32 42,43 46,48" fill="#F0B429"/>
+          <polygon points="22,32 42,32 46,37 18,37" fill="#FFE680"/>
+          <rect x="18" y="37" width="28" height="11" fill="#FFCE2E"/>
+          <polygon points="24,45.5 36,45.5 39,49.5 27,49.5" fill="#FFE680"/>
+          <polygon points="27,49.5 39,49.5 39,51.5 27,51.5" fill="#FFCE2E"/>
+          <polygon points="33,43.5 45,43.5 48,47.5 36,47.5" fill="#FFEC9E"/>
+          <polygon points="36,47.5 48,47.5 48,49.5 36,49.5" fill="#FFD94D"/>
+          <polygon points="45,43.5 48,47.5 48,49.5 45,45.5" fill="#F0B429"/>
+        </g>
+      </defs>
+    </svg>
 
-      <section id="screen-result" class="screen">
-        <p class="label">Your result</p>
-        <div class="score-number" id="score-number"></div>
-        <p class="label" style="margin-top:10px;">Out of 100</p>
-        <h2 class="band-title" id="band-title"></h2>
-        <p class="band-text" id="band-text"></p>
-        <div class="result-section" id="costing-section">
-          <p class="label">What&rsquo;s costing you</p>
-          <p class="nothing" id="costing-nothing" style="display:none;">Nothing. Not one thing.</p>
-          <ul id="costing-list"></ul>
-        </div>
-        <div class="result-section" id="nailed-section">
-          <p class="label">What you&rsquo;ve nailed</p>
-          <ul id="nailed-list"></ul>
-        </div>
-        <div>
-          <button class="btn-primary" id="retake-btn" type="button">Take it again</button>
-        </div>
-      </section>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="wordmark" href="#top" aria-label="Buttercup Health Test — home">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><use href="#butter-mark"/></svg>
+          <span class="wordmark-name">Buttercup <em>Health Test</em></span>
+        </a>
+        <nav class="topnav" aria-label="Main">
+          <a href="#quiz">The Test</a>
+          <a href="#how">How It Works</a>
+          <a class="nav-cta" href="#quiz">Start</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <div class="column">
+
+        <!-- ===== Title page ===== -->
+        <section class="hero">
+          <svg class="hero-logo" viewBox="0 0 64 64" role="img" aria-label="A pat of butter in a dish, with two slices fanned in front"><use href="#butter-mark"/></svg>
+          <span class="label">A health reality check</span>
+          <h1>Buttercup<br /><em>Health Test</em></h1>
+          <p class="hero-sub">Twenty everyday habits, five honest answers each. Find out whether you&rsquo;re running on butter &mdash; or running on fumes.</p>
+          <div class="hero-actions">
+            <a class="btn-primary" href="#quiz">Take the test</a>
+            <a class="btn-pill" href="#how">How it works</a>
+          </div>
+        </section>
+
+        <hr class="rule" />
+
+        <!-- ===== How it works ===== -->
+        <section class="how" id="how">
+          <span class="label">How it works</span>
+          <div class="how-grid">
+            <div class="how-item">
+              <span class="num">one</span>
+              <h3>Answer honestly</h3>
+              <p>No essays, no loopholes.</p>
+            </div>
+            <div class="how-item">
+              <span class="num">two</span>
+              <h3>Get your score</h3>
+              <p>Your answers add up to a score out of 100. The cleaner your habits, the higher you land.</p>
+            </div>
+            <div class="how-item">
+              <span class="num">three</span>
+              <h3>Read the verdict</h3>
+              <p>Nine possible results, from &ldquo;Running on fumes&rdquo; to a perfect-score &ldquo;You&rsquo;re better than everyone else.&rdquo;</p>
+            </div>
+          </div>
+        </section>
+
+        <hr class="rule" style="margin-top:48px" />
+
+        <!-- ===== Quiz screen mock ===== -->
+        <section class="quiz" id="quiz" aria-label="Sample question">
+          <div class="quiz-head">
+            <span class="label" id="q-counter">Question 1 of 20</span>
+            <span class="label" id="q-pct">5% complete</span>
+          </div>
+          <div class="progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="20" aria-label="Test progress">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+
+          <h2 class="quiz-question" id="q-text">I eat processed food</h2>
+          <p class="quiz-prompt" id="q-prompt">Be honest. The test can tell.</p>
+
+          <div class="answers" role="radiogroup" aria-label="Answer options">
+            <button type="button" class="answer" role="radio" aria-checked="false" data-value="Always">
+              <span class="radio" aria-hidden="true"></span>
+              <span>Always</span>
+            </button>
+            <button type="button" class="answer" role="radio" aria-checked="false" data-value="Often">
+              <span class="radio" aria-hidden="true"></span>
+              <span>Often</span>
+            </button>
+            <button type="button" class="answer" role="radio" aria-checked="false" data-value="Sometimes">
+              <span class="radio" aria-hidden="true"></span>
+              <span>Sometimes</span>
+            </button>
+            <button type="button" class="answer" role="radio" aria-checked="false" data-value="Rarely">
+              <span class="radio" aria-hidden="true"></span>
+              <span>Rarely</span>
+            </button>
+            <button type="button" class="answer" role="radio" aria-checked="false" data-value="Never">
+              <span class="radio" aria-hidden="true"></span>
+              <span>Never</span>
+            </button>
+          </div>
+
+          <div class="quiz-actions">
+            <button type="button" class="btn-pill" id="back-btn" disabled>Back</button>
+          </div>
+          <p class="quiz-hint" id="quiz-hint" aria-live="polite">Tap an answer above &mdash; it fills in butter-yellow, then moves you straight to the next question.</p>
+        </section>
+
+        <!-- ===== Result ===== -->
+        <section class="result" id="result" hidden aria-label="Your result">
+          <span class="label">Your result</span>
+          <div class="score-number" id="score-number"></div>
+          <span class="label">Out of 100</span>
+          <h2 class="band-title" id="band-title"></h2>
+          <p class="band-text" id="band-text"></p>
+          <div class="result-section">
+            <span class="label">What&rsquo;s costing you</span>
+            <p class="nothing" id="costing-nothing" style="display:none;">Nothing. Not one thing.</p>
+            <ul class="result-list" id="costing-list"></ul>
+          </div>
+          <div class="result-section" id="nailed-section">
+            <span class="label">What you&rsquo;ve nailed</span>
+            <ul class="result-list" id="nailed-list"></ul>
+          </div>
+          <div class="result-actions">
+            <button type="button" class="btn-primary" id="retake-btn">Take it again</button>
+          </div>
+        </section>
+
+      </div>
     </main>
 
     <footer>
-      <p class="slogan">health &amp; food news for grandmas and gym bros</p>
-      <a href="https://www.runningonbutter.com" target="_blank" rel="noopener">Subscribe to Running On Butter by Vance Voetberg</a>
+      <div class="footer-inner">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><use href="#butter-mark"/></svg>
+        <p class="footer-slogan">health &amp; food news for grandmas and gym bros</p>
+        <p class="footer-credit">From <a href="https://www.runningonbutter.com" target="_blank" rel="noopener">Running On Butter by Vance Voetberg</a></p>
+        <nav class="footer-links" aria-label="Running On Butter">
+          <a href="https://www.runningonbutter.com" target="_blank" rel="noopener">Subscribe</a>
+        </nav>
+
+      </div>
     </footer>
 
     <script>
@@ -326,58 +740,45 @@
       var picks = new Array(QUESTIONS.length).fill(null);
       var current = 0;
 
-      var screens = {
-        start: document.getElementById("screen-start"),
-        quiz: document.getElementById("screen-quiz"),
-        result: document.getElementById("screen-result")
-      };
-      var quizLabel = document.getElementById("quiz-label");
+      var quizSection = document.getElementById("quiz");
+      var resultSection = document.getElementById("result");
+      var counterEl = document.getElementById("q-counter");
+      var pctEl = document.getElementById("q-pct");
       var progressFill = document.getElementById("progress-fill");
-      var questionText = document.getElementById("question-text");
-      var answersEl = document.getElementById("answers");
+      var questionText = document.getElementById("q-text");
+      var answerBtns = Array.prototype.slice.call(document.querySelectorAll(".answer"));
       var backBtn = document.getElementById("back-btn");
 
-      function show(name) {
-        Object.keys(screens).forEach(function (k) {
-          screens[k].classList.toggle("active", k === name);
-        });
-        window.scrollTo(0, 0);
-      }
-
       function renderQuestion() {
-        var q = QUESTIONS[current];
-        quizLabel.textContent = "Question " + (current + 1) + " of " + QUESTIONS.length;
-        progressFill.style.width = ((current / QUESTIONS.length) * 100) + "%";
-        questionText.textContent = q.t;
-        answersEl.innerHTML = "";
-        ANSWERS.forEach(function (label, idx) {
-          var btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "answer-btn" + (picks[current] === idx ? " selected" : "");
-          var dot = document.createElement("span");
-          dot.className = "dot";
-          btn.appendChild(dot);
-          btn.appendChild(document.createTextNode(label));
-          btn.addEventListener("click", function () { pick(idx, btn); });
-          answersEl.appendChild(btn);
+        counterEl.textContent = "Question " + (current + 1) + " of " + QUESTIONS.length;
+        pctEl.textContent = Math.round(((current + 1) / QUESTIONS.length) * 100) + "% complete";
+        progressFill.style.width = (((current + 1) / QUESTIONS.length) * 100) + "%";
+        questionText.textContent = QUESTIONS[current].t;
+        answerBtns.forEach(function (btn, idx) {
+          var selected = picks[current] === idx;
+          btn.classList.toggle("selected", selected);
+          btn.setAttribute("aria-checked", selected ? "true" : "false");
         });
         backBtn.disabled = current === 0;
       }
 
-      function pick(idx, btn) {
-        picks[current] = idx;
-        var buttons = answersEl.querySelectorAll(".answer-btn");
-        buttons.forEach(function (b) { b.classList.remove("selected"); });
-        btn.classList.add("selected");
-        setTimeout(function () {
-          if (current < QUESTIONS.length - 1) {
-            current++;
-            renderQuestion();
-          } else {
-            renderResult();
-          }
-        }, 220);
-      }
+      answerBtns.forEach(function (btn, idx) {
+        btn.addEventListener("click", function () {
+          picks[current] = idx;
+          answerBtns.forEach(function (b, j) {
+            b.classList.toggle("selected", j === idx);
+            b.setAttribute("aria-checked", j === idx ? "true" : "false");
+          });
+          setTimeout(function () {
+            if (current < QUESTIONS.length - 1) {
+              current++;
+              renderQuestion();
+            } else {
+              renderResult();
+            }
+          }, 220);
+        });
+      });
 
       backBtn.addEventListener("click", function () {
         if (current > 0) {
@@ -422,20 +823,21 @@
         } else {
           nailedSection.style.display = "none";
         }
-        show("result");
+        quizSection.hidden = true;
+        resultSection.hidden = false;
+        resultSection.scrollIntoView();
       }
-
-      document.getElementById("start-btn").addEventListener("click", function () {
-        current = 0;
-        renderQuestion();
-        show("quiz");
-      });
 
       document.getElementById("retake-btn").addEventListener("click", function () {
         picks = new Array(QUESTIONS.length).fill(null);
         current = 0;
-        show("start");
+        resultSection.hidden = true;
+        quizSection.hidden = false;
+        renderQuestion();
+        quizSection.scrollIntoView();
       });
+
+      renderQuestion();
     </script>
   </body>
 </html>
