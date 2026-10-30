@@ -505,7 +505,10 @@
       }
       .result-list li .given { flex: none; font-style: italic; color: var(--meta); }
       .nothing { font-size: 17px; font-style: italic; color: var(--ink-soft); margin: 6px 0 0; }
-      .result-actions { margin-top: 40px; }
+      .result-actions { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+      .share-fallback { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+      .share-fallback[hidden] { display: none; }
+      .copied-note { font-family: var(--sans); font-size: 13px; color: var(--meta); }
     </style>
   </head>
   <body>
@@ -643,7 +646,14 @@
             <ul class="result-list" id="nailed-list"></ul>
           </div>
           <div class="result-actions">
-            <button type="button" class="btn-primary" id="retake-btn">Take it again</button>
+            <button type="button" class="btn-primary" id="share-btn">Share your result</button>
+            <button type="button" class="btn-pill" id="retake-btn">Take it again</button>
+          </div>
+          <div class="share-fallback" id="share-fallback" hidden>
+            <a class="btn-pill" id="share-x" href="#" target="_blank" rel="noopener">Post to X</a>
+            <a class="btn-pill" id="share-fb" href="#" target="_blank" rel="noopener">Share on Facebook</a>
+            <button type="button" class="btn-pill" id="copy-link-btn">Copy link</button>
+            <span class="copied-note" id="copied-note" hidden>Link copied — paste it anywhere, Instagram included.</span>
           </div>
         </section>
 
@@ -739,6 +749,7 @@
       /* === DOM BELOW (not used by tests) === */
       var picks = new Array(QUESTIONS.length).fill(null);
       var current = 0;
+      var lastResult = null;
 
       var quizSection = document.getElementById("quiz");
       var resultSection = document.getElementById("result");
@@ -804,6 +815,9 @@
 
       function renderResult() {
         var res = computeResults(picks);
+        lastResult = res;
+        document.getElementById("share-fallback").hidden = true;
+        document.getElementById("copied-note").hidden = true;
         document.getElementById("score-number").textContent = res.score;
         document.getElementById("band-title").textContent = res.band.title;
         document.getElementById("band-text").textContent = res.band.text;
@@ -827,6 +841,31 @@
         resultSection.hidden = false;
         resultSection.scrollIntoView();
       }
+
+      var SHARE_URL = "https://runningonbutter.github.io/healthtest/";
+      document.getElementById("share-btn").addEventListener("click", function () {
+        if (!lastResult) return;
+        var title = lastResult.band.title;
+        var quoted = "\u201C" + title + (/[!?]$/.test(title) ? "" : ".") + "\u201D";
+        var text = "I scored " + lastResult.score + " on the Buttercup Health Test \u2014 " + quoted + " Think you can beat that?";
+        if (navigator.share) {
+          navigator.share({ title: "Buttercup Health Test", text: text, url: SHARE_URL }).catch(function () {});
+        } else {
+          document.getElementById("share-x").href =
+            "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(SHARE_URL);
+          document.getElementById("share-fb").href =
+            "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(SHARE_URL);
+          document.getElementById("share-fallback").hidden = false;
+        }
+      });
+
+      document.getElementById("copy-link-btn").addEventListener("click", function () {
+        var note = document.getElementById("copied-note");
+        function done() { note.hidden = false; }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(SHARE_URL).then(done, done);
+        } else { done(); }
+      });
 
       document.getElementById("retake-btn").addEventListener("click", function () {
         picks = new Array(QUESTIONS.length).fill(null);
