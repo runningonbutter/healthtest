@@ -647,6 +647,7 @@
           </div>
           <div class="result-actions">
             <button type="button" class="btn-primary" id="share-btn">Share your result</button>
+            <button type="button" class="btn-pill" id="save-img-btn">Save image</button>
             <button type="button" class="btn-pill" id="retake-btn">Take it again</button>
           </div>
           <div class="share-fallback" id="share-fallback" hidden>
@@ -850,20 +851,118 @@
         return "I scored " + lastResult.score + " on the Buttercup Health Test \u2014 " + quoted + " Think you can beat that?";
       }
 
+      function wrapText(ctx, text, maxWidth) {
+        var words = text.split(" ");
+        var lines = [];
+        var line = "";
+        words.forEach(function (w) {
+          var test = line ? line + " " + w : w;
+          if (ctx.measureText(test).width > maxWidth && line) {
+            lines.push(line);
+            line = w;
+          } else { line = test; }
+        });
+        if (line) lines.push(line);
+        return lines;
+      }
+
+      // Draws the shareable result card (1080x1350 PNG) with the taker's own
+      // score and band. Branding at the bottom is Running On Butter.
+      function drawCard(callback) {
+        var W = 1080, H = 1350;
+        var canvas = document.createElement("canvas");
+        canvas.width = W; canvas.height = H;
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#2e1c11";
+        ctx.fillRect(0, 0, W, H);
+        ctx.textAlign = "center";
+
+        function finish() {
+          ctx.fillStyle = "#c9b294";
+          ctx.font = "600 34px -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
+          ctx.fillText("M Y   R E S U L T   O N   T H E", W / 2, 330);
+          ctx.fillStyle = "#f2dda6";
+          ctx.font = "700 64px Georgia, 'Times New Roman', serif";
+          ctx.fillText("Buttercup Health Test", W / 2, 415);
+
+          ctx.fillStyle = "#f2dda6";
+          ctx.font = "700 330px Georgia, 'Times New Roman', serif";
+          ctx.fillText(String(lastResult.score), W / 2, 760);
+          ctx.fillStyle = "#c9b294";
+          ctx.font = "600 34px -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
+          ctx.fillText("O U T   O F   1 0 0", W / 2, 835);
+
+          ctx.fillStyle = "#f5ebdd";
+          var band = "\u201C" + lastResult.band.title + "\u201D";
+          var size = 84;
+          ctx.font = "700 " + size + "px Georgia, 'Times New Roman', serif";
+          var lines = wrapText(ctx, band, W - 160);
+          while (lines.length > 2 && size > 40) {
+            size -= 8;
+            ctx.font = "700 " + size + "px Georgia, 'Times New Roman', serif";
+            lines = wrapText(ctx, band, W - 160);
+          }
+          lines.forEach(function (ln, i) {
+            ctx.fillText(ln, W / 2, 960 + i * (size + 14));
+          });
+
+          ctx.fillStyle = "#c9b294";
+          ctx.font = "italic 40px Georgia, 'Times New Roman', serif";
+          ctx.fillText("health & food news for grandmas and gym bros", W / 2, 1170);
+          ctx.fillStyle = "#f5ebdd";
+          ctx.font = "700 46px Georgia, 'Times New Roman', serif";
+          ctx.fillText("Running On Butter by Vance Voetberg", W / 2, 1240);
+          ctx.fillStyle = "#c9b294";
+          ctx.font = "500 36px -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
+          ctx.fillText("runningonbutter.com", W / 2, 1295);
+
+          canvas.toBlob(function (blob) { callback(blob, canvas); }, "image/png");
+        }
+
+        var img = new Image();
+        img.onload = function () { ctx.drawImage(img, W / 2 - 110, 60, 220, 220); finish(); };
+        img.onerror = function () { finish(); };
+        img.src = "favicon.svg";
+      }
+
       document.getElementById("share-btn").addEventListener("click", function () {
         if (!lastResult) return;
         var text = buildShareText();
-        if (navigator.share) {
-          // Message and link travel in ONE text field on purpose: many apps
-          // drop the text when a separate url field is attached.
-          navigator.share({ title: "Buttercup Health Test", text: text + " " + SHARE_URL }).catch(function () {});
-        } else {
-          document.getElementById("share-x").href =
-            "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(SHARE_URL);
-          document.getElementById("share-fb").href =
-            "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(SHARE_URL);
-          document.getElementById("share-fallback").hidden = false;
+        function textOnlyShare() {
+          if (navigator.share) {
+            // Message and link travel in ONE text field on purpose: many apps
+            // drop the text when a separate url field is attached.
+            navigator.share({ title: "Buttercup Health Test", text: text + " " + SHARE_URL }).catch(function () {});
+          } else {
+            document.getElementById("share-x").href =
+              "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(SHARE_URL);
+            document.getElementById("share-fb").href =
+              "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(SHARE_URL);
+            document.getElementById("share-fallback").hidden = false;
+          }
         }
+        if (navigator.canShare) {
+          drawCard(function (blob) {
+            if (!blob) { textOnlyShare(); return; }
+            var file = new File([blob], "buttercup-result.png", { type: "image/png" });
+            if (navigator.canShare({ files: [file] })) {
+              navigator.share({ title: "Buttercup Health Test", text: text + " " + SHARE_URL, files: [file] }).catch(function () {});
+            } else { textOnlyShare(); }
+          });
+        } else { textOnlyShare(); }
+      });
+
+      document.getElementById("save-img-btn").addEventListener("click", function () {
+        if (!lastResult) return;
+        drawCard(function (blob, canvas) {
+          if (!blob) return;
+          var a = document.createElement("a");
+          a.href = canvas.toDataURL("image/png");
+          a.download = "buttercup-result.png";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        });
       });
 
       document.getElementById("copy-link-btn").addEventListener("click", function () {
