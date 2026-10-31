@@ -652,8 +652,8 @@
           <div class="share-fallback" id="share-fallback" hidden>
             <a class="btn-pill" id="share-x" href="#" target="_blank" rel="noopener">Post to X</a>
             <a class="btn-pill" id="share-fb" href="#" target="_blank" rel="noopener">Share on Facebook</a>
-            <button type="button" class="btn-pill" id="copy-link-btn">Copy link</button>
-            <span class="copied-note" id="copied-note" hidden>Link copied — paste it anywhere, Instagram included.</span>
+            <button type="button" class="btn-pill" id="copy-link-btn">Copy result</button>
+            <span class="copied-note" id="copied-note" hidden>Result copied — paste it anywhere, Instagram included.</span>
           </div>
         </section>
 
@@ -843,13 +843,20 @@
       }
 
       var SHARE_URL = "https://runningonbutter.github.io/healthtest/";
-      document.getElementById("share-btn").addEventListener("click", function () {
-        if (!lastResult) return;
+
+      function buildShareText() {
         var title = lastResult.band.title;
         var quoted = "\u201C" + title + (/[!?]$/.test(title) ? "" : ".") + "\u201D";
-        var text = "I scored " + lastResult.score + " on the Buttercup Health Test \u2014 " + quoted + " Think you can beat that?";
+        return "I scored " + lastResult.score + " on the Buttercup Health Test \u2014 " + quoted + " Think you can beat that?";
+      }
+
+      document.getElementById("share-btn").addEventListener("click", function () {
+        if (!lastResult) return;
+        var text = buildShareText();
         if (navigator.share) {
-          navigator.share({ title: "Buttercup Health Test", text: text, url: SHARE_URL }).catch(function () {});
+          // Message and link travel in ONE text field on purpose: many apps
+          // drop the text when a separate url field is attached.
+          navigator.share({ title: "Buttercup Health Test", text: text + " " + SHARE_URL }).catch(function () {});
         } else {
           document.getElementById("share-x").href =
             "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(SHARE_URL);
@@ -860,10 +867,11 @@
       });
 
       document.getElementById("copy-link-btn").addEventListener("click", function () {
+        if (!lastResult) return;
         var note = document.getElementById("copied-note");
         function done() { note.hidden = false; }
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(SHARE_URL).then(done, done);
+          navigator.clipboard.writeText(buildShareText() + " " + SHARE_URL).then(done, done);
         } else { done(); }
       });
 
