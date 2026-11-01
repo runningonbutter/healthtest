@@ -647,7 +647,6 @@
           </div>
           <div class="result-actions">
             <button type="button" class="btn-primary" id="share-btn">Share your result</button>
-            <button type="button" class="btn-pill" id="save-img-btn">Save image</button>
             <button type="button" class="btn-pill" id="retake-btn">Take it again</button>
           </div>
           <div class="share-fallback" id="share-fallback" hidden>
@@ -886,11 +885,11 @@
           ctx.fillText("Buttercup Health Test", W / 2, 415);
 
           ctx.fillStyle = "#f2dda6";
-          ctx.font = "700 330px Georgia, 'Times New Roman', serif";
-          ctx.fillText(String(lastResult.score), W / 2, 760);
+          ctx.font = "700 280px Georgia, 'Times New Roman', serif";
+          ctx.fillText(String(lastResult.score), W / 2, 715);
           ctx.fillStyle = "#c9b294";
           ctx.font = "600 34px -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
-          ctx.fillText("O U T   O F   1 0 0", W / 2, 835);
+          ctx.fillText("O U T   O F   1 0 0", W / 2, 875);
 
           ctx.fillStyle = "#f5ebdd";
           var band = "\u201C" + lastResult.band.title + "\u201D";
@@ -947,19 +946,6 @@
             } else { textOnlyShare(); }
           });
         } else { textOnlyShare(); }
-      });
-
-      document.getElementById("save-img-btn").addEventListener("click", function () {
-        if (!lastResult) return;
-        drawCard(function (blob, canvas) {
-          if (!blob) return;
-          var a = document.createElement("a");
-          a.href = canvas.toDataURL("image/png");
-          a.download = "buttercup-result.png";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-        });
       });
 
       document.getElementById("copy-link-btn").addEventListener("click", function () {
